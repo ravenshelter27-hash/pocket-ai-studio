@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101114">
+  <meta name="description" content="Pocket AI Studio — hosted AI chat, character profiles, and image generation.">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <title>Pocket AI Studio</title>
+</head>
+<body>
+  <div class="app-shell">
+    <aside id="sidebar" class="sidebar">
+      <div class="brand"><div class="brand-mark">✦</div><div><b>Pocket AI</b><small>STUDIO</small></div><button id="closeSidebar" class="icon-btn mobile-only" aria-label="Close menu">×</button></div>
+      <button id="newChat" class="new-chat">＋ <span>New chat</span></button>
+      <nav class="main-nav">
+        <button class="nav-item active" data-view="chat"><span>◌</span> Chat</button>
+        <button class="nav-item" data-view="images"><span>▧</span> Image studio</button>
+        <button class="nav-item" data-view="characters"><span>♙</span> Characters</button>
+      </nav>
+      <div class="side-label">RECENT CHATS <button id="clearChats" title="Clear all chats">···</button></div>
+      <div id="conversationList" class="conversation-list"></div>
+      <div class="sidebar-bottom"><span id="providerDot" class="status-dot"></span><div><b id="providerStatus">Checking provider</b><small id="providerModel">Hosted AI</small></div><button id="settingsBtn" class="icon-btn" aria-label="Settings">⚙</button></div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <button id="openSidebar" class="icon-btn" aria-label="Open menu">☰</button>
+        <div class="mobile-brand">✦ Pocket AI</div>
+        <div class="top-spacer"></div>
+        <button id="topSettings" class="icon-btn" aria-label="Settings">⚙</button>
+      </header>
+      <section id="chatView" class="view active">
+        <div id="chatMessages" class="chat-messages">
+          <div id="welcome" class="welcome">
+            <div class="welcome-mark">✦</div>
+            <h1>What can we create?</h1>
+            <p>Chat, build ideas, and develop consistent fictional characters.</p>
+            <div class="suggestions">
+              <button data-prompt="Help me develop a fictional character with a consistent appearance.">♙ <span><b>Build a character</b><small>Appearance and personality notes</small></span></button>
+              <button data-prompt="Give me five creative, photorealistic image prompts for a poolside portrait.">▧ <span><b>Create an image prompt</b><small>Camera, lighting, and composition</small></span></button>
+              <button data-prompt="Help me plan a small business as a college student.">✧ <span><b>Explore an idea</b><small>Plan the next steps</small></span></button>
+            </div>
+          </div>
+        </div>
+        <div class="composer-wrap">
+          <div id="activeCharacterPill" class="active-character hidden"></div>
+          <form id="chatForm" class="composer">
+            <textarea id="chatInput" rows="1" placeholder="Message Pocket AI..." maxlength="12000"></textarea>
+            <div class="composer-bottom"><div class="composer-hint">AI can make mistakes. Check important information.</div><button id="sendBtn" class="send-btn" type="submit" aria-label="Send message">↑</button></div>
+          </form>
+          <div class="tiny-note">Hosted models may have provider-specific usage limits.</div>
+        </div>
+      </section>
+      <section id="imagesView" class="view">
+        <div class="page-heading"><div class="eyebrow">CREATIVE WORKSPACE</div><h1>Image studio</h1><p>Turn a detailed prompt into an image when your image provider is configured.</p></div>
+        <div class="studio-grid">
+          <form id="imageForm" class="panel image-controls">
+            <label for="imagePrompt">Describe your image</label>
+            <textarea id="imagePrompt" rows="5" placeholder="A photorealistic portrait of a fictional adult woman, soft natural lighting, poolside setting, editorial photography..."></textarea>
+            <div class="two-fields">
+              <div><label for="imageStyle">Style</label><select id="imageStyle"><option>Photorealistic</option><option>Anime</option><option>Editorial photography</option><option>Digital art</option><option>Watercolor</option><option>Cinematic</option></select></div>
+              <div><label for="imageRatio">Composition</label><select id="imageRatio"><option>Portrait</option><option>Square</option><option>Landscape</option></select></div>
+            </div>
+            <label class="check-row"><input id="useCharacter" type="checkbox" checked> Include active character profile notes</label>
+            <button class="primary-btn" id="generateBtn" type="submit">✦ Generate image</button>
+            <p class="muted small">Generation depends on the configured model, its terms, and available quota. No provider key is exposed to this page.</p>
+          </form>
+          <div class="panel image-result"><div class="result-top"><b>Result</b><span id="imageState" class="muted">Waiting for prompt</span></div><div id="imageOutput" class="image-output"><div class="empty-art"><span>▧</span><b>Your canvas awaits</b><small>Generated images will appear here.</small></div></div><div id="imageActions" class="image-actions hidden"><a id="downloadImage" class="secondary-btn" download="pocket-ai-image.png">Download image</a><button id="usePrompt" class="secondary-btn">Reuse prompt</button></div></div>
+        </div>
+        <div class="panel gallery-panel"><div class="panel-title"><b>Recent generations</b><small>Saved in this browser</small></div><div id="imageGallery" class="image-gallery"><p class="muted">Images you generate will be listed here.</p></div></div>
+      </section>
+      <section id="charactersView" class="view">
+        <div class="page-heading"><div class="eyebrow">CREATIVE CONTINUITY</div><h1>Character profiles</h1><p>Save descriptions and reuse them in chat and image prompts.</p></div>
+        <div class="character-layout">
+          <form id="characterForm" class="panel character-editor">
+            <input id="characterId" type="hidden">
+            <div class="panel-title"><b id="characterFormTitle">Create a character</b><button id="resetCharacter" type="button" class="text-btn">Reset</button></div>
+            <label for="characterName">Character name</label><input id="characterName" required maxlength="100" placeholder="e.g. Mira">
+            <label for="characterDescription">Appearance and continuity notes</label><textarea id="characterDescription" rows="7" maxlength="4000" placeholder="Fictional adult character. Face shape, hairstyle, eye color, complexion, clothing preferences, personality, and details to keep consistent..."></textarea>
+            <label for="characterStyle">Default visual style</label><select id="characterStyle"><option>Photorealistic</option><option>Anime</option><option>Editorial photography</option><option>Digital art</option><option>Cinematic</option></select>
+            <div class="button-row"><button type="submit" class="primary-btn">Save character</button><button id="deleteCharacter" type="button" class="secondary-btn">Delete</button></div>
+          </form>
+          <div class="panel character-list-panel"><div class="panel-title"><b>Your characters</b><small id="characterCount">0 saved</small></div><div id="characterList" class="character-list"><div class="empty-state">Your saved characters will appear here.</div></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <div id="settingsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal-card"><div class="modal-head"><div><div class="eyebrow">APP CONFIGURATION</div><h2 id="settingsTitle">Settings</h2></div><button id="closeSettings" class="icon-btn" aria-label="Close settings">×</button></div>
+      <p class="muted">Provider keys are configured on the server in <code>.env</code>; they are never entered or stored in this browser.</p>
+      <div class="setting-status"><span id="chatStatusBadge" class="badge">Checking</span><div><b>Hosted chat model</b><small id="chatStatusText">Checking server configuration…</small></div></div>
+      <div class="setting-status"><span id="imageStatusBadge" class="badge">Checking</span><div><b>Image generation</b><small id="imageStatusText">Checking server configuration…</small></div></div>
+      <div class="setting-status"><span id="passwordStatusBadge" class="badge">Optional</span><div><b>App password</b><small id="passwordStatusText">Can be enabled for a private single-user deployment.</small></div></div>
+      <label for="appPassword">App password (only if server admin enabled it)</label><input id="appPassword" type="password" autocomplete="current-password" placeholder="Enter app password">
+      <button id="saveSettings" class="primary-btn full">Save local settings</button>
+      <p class="small muted">Chat history and character profiles are saved on the server. Treat this as a personal prototype; add real user authentication and a database before hosting it publicly for multiple people.</p>
+    </div>
+  </div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
